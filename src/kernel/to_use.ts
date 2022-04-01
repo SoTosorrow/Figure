@@ -1,5 +1,6 @@
 import {EventDispatcher, CanvasKeyBoardEvent, CanvasMouseEvent} from './dispatcher'
 import { Application } from "./application";
+import { Renderer } from './renderer';
 
 
 export class DispatcherTest extends EventDispatcher{
@@ -14,9 +15,7 @@ export class DispatcherTest extends EventDispatcher{
 export class ApplicationTestDispatcher extends Application{
 
     constructor(canvas:HTMLCanvasElement){
-        let dispatcher = new DispatcherTest(canvas);
-//TODO 参数缺省了dispatcher依然会导入dispatcher参数？？？
-        super(canvas, dispatcher);
+        super(canvas);
     }
 
     public update(totalTime:number, interTime:number):void{
@@ -38,8 +37,9 @@ export class Canvas2DApplication extends Application {
     public context !: CanvasRenderingContext2D;
 
     public constructor(canvas : HTMLCanvasElement ) {
-        let dispatcher = new DispatcherTest(canvas);
-        super(canvas, dispatcher);
+        super(canvas);
+        super.setModule("dispatcher",new DispatcherTest(canvas));
+
         // context2DTemp 类型为 CanvasRenderingContext2D | null
         let contextTemp = this.canvas.getContext("2d");
         // 保证context2D不为null
@@ -84,13 +84,49 @@ export class Canvas2DApplication extends Application {
     }
 
     public render():void{
-        // this.context.fillRect(0,0,Math.random()*100,100);
         this.clearContext();
-        // this.drawRect(100,0,Math.random()*100,100);
         this.drawNoise();
     }
     public update(totalTime:number, interTime:number):void{
-        console.log(1/interTime);
+        // console.log(1/interTime);
     }
 }
 
+
+/*
+目标代码：按键控制玩家移动，收到碰撞颜色改变
+class control : extends EventDispatcher{
+    protected dispatchKeyDown(evt:CanvasKeyBoardEvent):void{
+        console.log(evt.key);
+    }
+    protected dispatchMouseDown(evt:CanvasMouseEvent):void{
+        console.log(evt.canvasPosition.toString());
+    }
+}
+class render : extends Canvas2DApplication{
+
+}
+class Player{
+
+    public hp : number = 10;
+    public pos : vec2 = ();
+
+    void render(){
+
+    }
+
+    void update(){
+
+    }
+
+    void onCollsionEnter(collsion other)
+    {
+        if(other.tag == "enemy"){
+            this.hp--;
+        }
+    }
+}
+app.conpenment.add(new Player());
+
+
+*/
