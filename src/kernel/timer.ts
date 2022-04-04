@@ -1,3 +1,4 @@
+import {Module} from './define'
 /*
     定时器
 */
@@ -105,4 +106,19 @@ export class TimerManager{
     public removeTimerPermanent(id: number) : boolean{
         return true;
     }
+}
+
+export class TimerManagerModule implements Module{
+
+    public enable : boolean = true;
+    public module !: TimerManager;
+
+    public constructor(){
+        this.module = new TimerManager();
+    }
+
+    public update(totalTime:number, interTime:number):void{
+        this.module.handleTimers(interTime);
+    }
+
 }

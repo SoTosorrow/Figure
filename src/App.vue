@@ -7,19 +7,16 @@
 
 <script setup lang="ts">
 import {onMounted, ref, reactive} from 'vue'
-import { DispatcherTest} from './kernel/to_use'
-import { Test} from './kernel/renderer'
+import { Circle, DispatcherTest,Rect,Test} from './kernel/to_use'
 import {Application} from './kernel/application'
+import { UnitManagerModule } from './kernel/unit';
 
 let app !: Application;
-let timer0 : number;
-let timer1 : number;
 
 let clickStart = ()=>{
   app.start();
 }
 let clickStop = ()=>{
-  app.getModule("timerManager").removeTimer(timer1);
   app.stop();
   
 }
@@ -27,19 +24,18 @@ let clickStop = ()=>{
 onMounted(()=>{
   let canvas = document.getElementById("cav") as HTMLCanvasElement;
   app = new Application(canvas);
-  app.modules.set("renderer", new Test(app.canvas));
-  app.modules.set("dispatcher",new DispatcherTest(app.canvas))
+  
+  
+  // app.modules.set("renderer", new Test(app.canvas, app));
+  app.modules.set("dispatcher",new DispatcherTest(app.canvas,app));
+  let element = new Rect();
+  let element2 = new Circle();
+  (app.modules.get("unitManager") as UnitManagerModule).module.addUnit(element);
+  (app.modules.get("unitManager") as UnitManagerModule).module.addUnit(element2);
+  (app.modules.get("unitManager") as UnitManagerModule).module.removeUnit(element);
 
-  timer0 = app.getModule("timerManager").addTimer(
-      (id:number,data:string)=>{
-        console.log(data);
-      }
-  ,3,true,"test string");
-  timer1 = app.getModule("timerManager").addTimer(
-    (id:number,data:string)=>{
-      console.log(data);
-    }
-  ,1,false,"11111")
+
+
 })
 </script>
 

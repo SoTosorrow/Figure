@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>demo01</title>
+</head>
+<body>
+    <center>
+ <br>
+ <canvas id="mycanvas" width="500" height="400"></canvas>
+</center>
+ <script>
+     /**
+      * https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Basic_animations
+      */
+    var context = document.getElementById('mycanvas').getContext('2d');
+
+
+    let i = 0;
+    let lastTime = -1;
+    let effectImage = context.createImageData(500,400);
+    let effect = (time)=>{
+        window.requestAnimationFrame(
+            (time)=>{
+                effect(time);
+            }
+        )
+        console.log(1/((time-lastTime)/1000));
+        for(let j=0;j<1000;j++){
+
+            this.context.save();
+            {
+                this.context.fillStyle = "red";
+                this.context.lineWidth = 3;
+                this.context.setLineDash([10,5]);
+                this.context.beginPath();
+                this.context.arc(100,100,30,0,Math.PI*2);
+                // this.context.fill();
+                this.context.stroke();
+                // this.context.fillRect(100,100,100,100);
+            }
+            this.context.restore();
+        }
+        lastTime = time;
+      
+    }
+    effect();
+   
+ </script>
+</body>
+</html> 

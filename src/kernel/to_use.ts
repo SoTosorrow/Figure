@@ -1,64 +1,66 @@
 import {EventDispatcher, CanvasKeyBoardEvent, CanvasMouseEvent} from './dispatcher'
 import { Application } from "./application";
 import { Renderer } from './renderer';
+import { Module } from './define';
+import { Unit } from './unit';
 
 
-export class DispatcherTest extends EventDispatcher{
+export class DispatcherTest extends EventDispatcher implements Module{
+
+    public app:any;
+    public enable : boolean = true;
+    public mouseX : number = 0;
+    public mouseY : number = 0;
+
+    public constructor(canvas:HTMLCanvasElement,app:any){
+        super(canvas);
+        this.app = app;
+        this.isSupportMouseMove = true;
+    }
+    public update(totalTime:number, interTime:number){
+    }
+
+    protected dispatchMouseMove(evt:CanvasMouseEvent):void{
+        this.mouseX = evt.canvasPosition.x;
+        this.mouseY = evt.canvasPosition.y;
+        // console.log(this.mouseX,this.mouseY);
+        
+    }
     protected dispatchKeyDown(evt:CanvasKeyBoardEvent):void{
         console.log(evt.key);
     }
     protected dispatchMouseDown(evt:CanvasMouseEvent):void{
         console.log(evt.canvasPosition.toString());
-    }
-}
-
-export class ApplicationTestDispatcher extends Application{
-
-    constructor(canvas:HTMLCanvasElement){
-        super(canvas);
-    }
-
-    public update(totalTime:number, interTime:number):void{
-        // console.log(1/interTime);
+        // this.app.getModule("timerManager").addTimer(
+        //     (a:number,b:number):void=>{
+        //         this.app.getModule("renderer").drawCircle(evt.canvasPosition.x,evt.canvasPosition.y,20);
+        //     },0.03
+        // )
+        // this.app.getModule("renderer").drawCircle(evt.canvasPosition.x,evt.canvasPosition.y,20);
         
     }
-    public render():void{
-
-    }
 }
 
-/*
-    封装了绘制函数的Application
-TODO 封装到renderer中再作为模块结合到application
-TODO 字典形式传参
-TODO 字典的默认
-*/
-export class Canvas2DApplication extends Application {
-    public context !: CanvasRenderingContext2D;
+export class Test extends Renderer implements Module{
 
-    public constructor(canvas : HTMLCanvasElement ) {
-        super(canvas);
-        super.setModule("dispatcher",new DispatcherTest(canvas));
+    public _lineDashOffset : number = 0;
+    public app : any;
+    public enable:boolean = true;
 
-        // context2DTemp 类型为 CanvasRenderingContext2D | null
-        let contextTemp = this.canvas.getContext("2d");
-        // 保证context2D不为null
-        if( contextTemp === null){
-            return;
-        }
-        this.context = contextTemp;
-    }
-
-    public clearContext() : void{
-        this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    private _updateLineDashOffset():void{
+        this._lineDashOffset++;
+        if(this._lineDashOffset>10000)
+            this._lineDashOffset=0;
     }
 
     public drawRect( x:number, y:number, w:number, h:number):void{
         this.context.save();
         {
             this.context.fillStyle = "grey";
+            this.context.lineWidth = 5;
+            // this.context.setLineDash([10,5]);
+            // this.context.lineDashOffset = this._lineDashOffset;
             // this.context.strokeStyle = "blue";
-            // this.context.lineWidth = 5;
             this.context.beginPath();
             this.context.moveTo(x, y);
             this.context.lineTo(x + w, y);
@@ -66,31 +68,63 @@ export class Canvas2DApplication extends Application {
             this.context.lineTo(x, y + h);
             // 封闭几何
             this.context.closePath();
-            this.context.stroke();
+            // 绘制线条
+            this.context.fill();
         }
         this.context.restore();
     }
 
-    public drawNoise():void{
-        let image = this.context.createImageData(this.canvas.width,this.canvas.height);
-        // let image = this.context.getImageData(0,0,this.canvas.width,this.canvas.height);
-        for(let i=0;i<image.data.length;i++){
-            image.data[0+4*i] = Math.floor(Math.random()*255)
-            image.data[1+4*i] = Math.floor(Math.random()*255)
-            image.data[2+4*i] = Math.floor(Math.random()*255)
-            image.data[3+4*i] = Math.floor(Math.random()*255)
+    public drawCircle(x:number, y:number, r:number):void{
+        this.context.save();
+        {
+            this.context.fillStyle = "red";
+            this.context.lineWidth = 3;
+            this.context.setLineDash([10,5]);
+            this.context.lineDashOffset = this._lineDashOffset;
+            this.context.beginPath();
+            this.context.arc(x,y,r,0,Math.PI*2);
+            this.context.fill();
+            // this.context.stroke();
         }
-        this.context.putImageData(image,0,0);
+        this.context.restore();
     }
 
+
+    public callback(id:number, data:any):void{
+        this._updateLineDashOffset();
+        // this.drawRect(100,100,100,100);
+    }
+
+    public constructor(canvas : HTMLCanvasElement, app : any ) {
+        super(canvas);
+        this.app = app;
+        this.app.modules.get("timerManager").module.addTimer(this.callback.bind(this),0.033);
+        
+    }
     public render():void{
-        this.clearContext();
+        
         this.drawNoise();
     }
-    public update(totalTime:number, interTime:number):void{
-        // console.log(1/interTime);
+    public update(totalTime:number, interTime:number){
+        this.clearContext();
+        this.drawGrid();
+        // this.context.translate(200,100);
+        this.render();
     }
 }
+
+export class Rect implements Unit{
+    public draw(renderer:Renderer):void{
+        renderer.drawRect(100,100,100,100);
+    }
+}
+export class Circle implements Unit{
+    public draw(renderer:Renderer):void{
+        renderer.drawCircle(100,100,30);
+    }
+}
+
+
 
 
 /*

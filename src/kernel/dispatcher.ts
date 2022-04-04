@@ -4,7 +4,7 @@
     TODO 增加map<string,func>的自定义事件
 */
 
-import { EInputEventType }from './define';
+import { EInputEventType, Module }from './define';
 import { vec2 } from './math2d';
 
 export class CanvasInputEvent {
@@ -54,6 +54,7 @@ export class EventDispatcher implements EventListenerObject{
     public isSupportMouseMove ?: boolean ;
     protected _isMouseDown ?: boolean ;
     public canvas : HTMLCanvasElement;
+    // currentKey : string.....;
 
     constructor(canvas : HTMLCanvasElement){
         this.canvas = canvas;
@@ -177,3 +178,14 @@ export class EventDispatcher implements EventListenerObject{
     }
 }
 
+export class EventDispatcherModule implements Module{
+
+    public enable : boolean = true;
+    public module !: any;
+
+    public constructor(canvas : HTMLCanvasElement){
+        this.module = new EventDispatcher(canvas);
+    }
+
+    public update(totalTime:number, interTime:number):void{}
+}
