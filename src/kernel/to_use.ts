@@ -1,5 +1,4 @@
 import {EventDispatcher, CanvasKeyBoardEvent, CanvasMouseEvent} from './dispatcher'
-import { Application } from "./application";
 import { Renderer } from './renderer';
 import { Module } from './define';
 import { Unit } from './unit';
@@ -41,81 +40,15 @@ export class DispatcherTest extends EventDispatcher implements Module{
     }
 }
 
-export class Test extends Renderer implements Module{
-
-    public _lineDashOffset : number = 0;
-    public app : any;
-    public enable:boolean = true;
-
-    private _updateLineDashOffset():void{
-        this._lineDashOffset++;
-        if(this._lineDashOffset>10000)
-            this._lineDashOffset=0;
-    }
-
-    public drawRect( x:number, y:number, w:number, h:number):void{
-        this.context.save();
-        {
-            this.context.fillStyle = "grey";
-            this.context.lineWidth = 5;
-            // this.context.setLineDash([10,5]);
-            // this.context.lineDashOffset = this._lineDashOffset;
-            // this.context.strokeStyle = "blue";
-            this.context.beginPath();
-            this.context.moveTo(x, y);
-            this.context.lineTo(x + w, y);
-            this.context.lineTo(x + w, y + h);
-            this.context.lineTo(x, y + h);
-            // 封闭几何
-            this.context.closePath();
-            // 绘制线条
-            this.context.fill();
-        }
-        this.context.restore();
-    }
-
-    public drawCircle(x:number, y:number, r:number):void{
-        this.context.save();
-        {
-            this.context.fillStyle = "red";
-            this.context.lineWidth = 3;
-            this.context.setLineDash([10,5]);
-            this.context.lineDashOffset = this._lineDashOffset;
-            this.context.beginPath();
-            this.context.arc(x,y,r,0,Math.PI*2);
-            this.context.fill();
-            // this.context.stroke();
-        }
-        this.context.restore();
-    }
-
-
-    public callback(id:number, data:any):void{
-        this._updateLineDashOffset();
-        // this.drawRect(100,100,100,100);
-    }
-
-    public constructor(canvas : HTMLCanvasElement, app : any ) {
-        super(canvas);
-        this.app = app;
-        this.app.modules.get("timerManager").module.addTimer(this.callback.bind(this),0.033);
-        
-    }
-    public render():void{
-        
-        this.drawNoise();
-    }
-    public update(totalTime:number, interTime:number){
-        this.clearContext();
-        this.drawGrid();
-        // this.context.translate(200,100);
-        this.render();
-    }
-}
-
 export class Rect implements Unit{
+    public x:number=0;
+    public y:number=0;
+    public constructor(x:number,y:number){
+        this.x = x;
+        this.y = y;
+    }
     public draw(renderer:Renderer):void{
-        renderer.drawRect(100,100,100,100);
+        renderer.drawRect(this.x,this.y,100,100);
     }
 }
 export class Circle implements Unit{

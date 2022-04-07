@@ -46,6 +46,7 @@ export class UnitManager{
     public render():void{
         
         this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+        this.renderer.drawGrid();
         for(let i of this.units){
             // if i.visiable === false
             i.draw(this.renderer);

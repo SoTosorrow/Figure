@@ -1,4 +1,5 @@
 <template>
+<video id="myVideo" width="500" height="400" src=""></video>
   <canvas id="cav" width="500" height="300" class="canvas"></canvas>
   <br>
   <button id="start" @click="clickStart">start</button>
@@ -7,9 +8,12 @@
 
 <script setup lang="ts">
 import {onMounted, ref, reactive} from 'vue'
-import { Circle, DispatcherTest,Rect,Test} from './kernel/to_use'
-import {Application} from './kernel/application'
-import { UnitManagerModule } from './kernel/unit';
+import { Circle, DispatcherTest,Rect} from './kernel/to_use'
+import { Application } from './kernel/application'
+import { Unit } from './kernel/unit';
+import { Utils } from './utils'
+import { TimerManagerModule } from './kernel/timer';
+import { RenderLayerStack, RenderLayerStackModule} from './kernel/renderLayerStack'
 
 let app !: Application;
 
@@ -25,15 +29,26 @@ onMounted(()=>{
   let canvas = document.getElementById("cav") as HTMLCanvasElement;
   app = new Application(canvas);
   
-  
-  // app.modules.set("renderer", new Test(app.canvas, app));
   app.modules.set("dispatcher",new DispatcherTest(app.canvas,app));
-  let element = new Rect();
-  let element2 = new Circle();
-  (app.modules.get("unitManager") as UnitManagerModule).module.addUnit(element);
-  (app.modules.get("unitManager") as UnitManagerModule).module.addUnit(element2);
-  (app.modules.get("unitManager") as UnitManagerModule).module.removeUnit(element);
+  let l:Unit[] = [];
+  l.push(new Rect(100,10));
+  l.push(new Rect(100,100));
+  l.push(new Circle());
+  (l[1] as Rect).x = 200;
 
+  let timer = (app.modules.get("timerManager") as TimerManagerModule).module.addTimer(
+    (a:number,b:number):void=>{
+      (l[1] as Rect).x = Math.random()*200;
+      (l[1] as Rect).y = Math.random()*200;
+    },0.03
+  )
+
+  Utils.addElementList(app, l);
+
+  // let stack = new RenderLayerStack(app.canvas);
+  // stack.test();
+
+   app.modules.set("renderStack",new RenderLayerStackModule(app.canvas));
 
 
 })

@@ -4,14 +4,17 @@
     帧时间定时器
 
 2、Renderer：
-    是否要将绘制部分改为static静态？工厂模式生产？
-    或者绘制时只是统一的调用static的Render
     绘制部分参数的字典化
     分层式与图元式
+    分解为state与draw两个接口
 3、碰撞与范围检测模块
 5、局部坐标变化Transform模块
 
 4、整理代码
+6、webgl的纹理加速
+    webgpu?
+    webgl2 的发展和优点
+    如何批处理draw
 
 模块的优先级改造：
 
