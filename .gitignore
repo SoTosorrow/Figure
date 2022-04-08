@@ -1,4 +1,6 @@
 .vscode
+test
+src/kernel/todo.txt
 
 # Logs
 logs

@@ -94,8 +94,6 @@ export class Application{
         let interTime = ( time - this._lastTime );
 
         interTime /= 1000.0 ;
-        // fps
-        console.log(1/interTime);
         
         this._lastTime = time ;
         

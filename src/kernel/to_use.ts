@@ -10,6 +10,7 @@ export class DispatcherTest extends EventDispatcher implements Module{
     public enable : boolean = true;
     public mouseX : number = 0;
     public mouseY : number = 0;
+    public isDown : boolean = false;
 
     public constructor(canvas:HTMLCanvasElement,app:any){
         super(canvas);
@@ -23,6 +24,8 @@ export class DispatcherTest extends EventDispatcher implements Module{
         this.mouseX = evt.canvasPosition.x;
         this.mouseY = evt.canvasPosition.y;
         // console.log(this.mouseX,this.mouseY);
+        if(this.isDown)
+            this.app.getModule("unitManager").module.addUnit(new Rect(evt.canvasPosition.x, evt.canvasPosition.y))
         
     }
     protected dispatchKeyDown(evt:CanvasKeyBoardEvent):void{
@@ -30,13 +33,10 @@ export class DispatcherTest extends EventDispatcher implements Module{
     }
     protected dispatchMouseDown(evt:CanvasMouseEvent):void{
         console.log(evt.canvasPosition.toString());
-        // this.app.getModule("timerManager").addTimer(
-        //     (a:number,b:number):void=>{
-        //         this.app.getModule("renderer").drawCircle(evt.canvasPosition.x,evt.canvasPosition.y,20);
-        //     },0.03
-        // )
-        // this.app.getModule("renderer").drawCircle(evt.canvasPosition.x,evt.canvasPosition.y,20);
-        
+        this.isDown = true;
+    }
+    protected dispatchMouseUp(evt:CanvasMouseEvent):void{
+        this.isDown = false;
     }
 }
 
@@ -48,7 +48,7 @@ export class Rect implements Unit{
         this.y = y;
     }
     public draw(renderer:Renderer):void{
-        renderer.drawRect(this.x,this.y,100,100);
+        renderer.drawRect(this.x,this.y,10,10);
     }
 }
 export class Circle implements Unit{

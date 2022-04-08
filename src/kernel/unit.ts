@@ -89,7 +89,7 @@ export class UnitManager{
 }
 
 export class UnitManagerModule implements Module{
-    public enable : boolean = true;
+    public enable : boolean = false;
     public module !: any;
 
     public constructor(canvas : HTMLCanvasElement){
